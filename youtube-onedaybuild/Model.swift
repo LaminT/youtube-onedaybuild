@@ -7,7 +7,13 @@
 
 import Foundation
 
+protocol ModelDeledate {
+    func videosFetched(_ videos: [Video])
+}
+
 class Model {
+    var deledate: ModelDeledate?
+    
     func getVideos() {
         // Create a URL object
         let url = URL(string: Constants.API_URL)
@@ -29,6 +35,14 @@ class Model {
                 let decoder = JSONDecoder()
                 decoder.dateDecodingStrategy = .iso8601
                 let response = try decoder.decode(Response.self, from: data!)
+                
+                if response.items != nil {
+                    DispatchQueue.main.async {
+                    // Call the "videosFetched" method of the delegate
+                    self.deledate?.videosFetched(response.items!)
+                    }
+                }
+                
                 
                 dump(response)
                 
